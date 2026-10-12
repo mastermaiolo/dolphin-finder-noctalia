@@ -1,0 +1,5 @@
+# Acrescentar ao ~/.config/noctalia/config.toml (o install.fish faz isto sozinho)
+[theme.templates.user.mactahoe]
+input_path = "$HOME/.config/noctalia/templates/mactahoe/palette.json"
+output_path = "$HOME/.local/state/mactahoe-noctalia/palette.json"
+post_hook = "python3 $HOME/.config/noctalia/scripts/mactahoe-recolor.py"

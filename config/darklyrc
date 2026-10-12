@@ -1,0 +1,9 @@
+[Style]
+DolphinSidebarOpacity=55
+ToolBarOpacity=55
+DolphinViewOpacity=80
+MenuOpacity=90
+ViewDrawFocusIndicator=false
+SidePanelDrawFrame=false
+ToolBarDrawSeparator=false
+DisableDolphinUrlNavigatorBackground=true
