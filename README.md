@@ -1,84 +1,184 @@
-# dolphin-finder-noctalia
+<p align="center">
+  <img src="assets/readme/hero.svg" width="100%" alt="dolphin-finder-noctalia — a Finder-style Dolphin for Hyprland + Noctalia">
+</p>
 
-Dolphin com cara de **Finder do macOS** em **Hyprland + Noctalia**: barra lateral de vidro, ícones **MacTahoe** e pastas que **mudam de cor com o wallpaper**, seguindo a paleta tonal (Material You) do Noctalia.
+<p align="center"><sub><strong>KDE DOLPHIN · DARKLY · MACTAHOE · HYPRLAND · NOCTALIA</strong></sub></p>
 
-![screenshot](screenshots/dolphin.png)
+<p align="center">
+  🇬🇧 <strong>English (UK)</strong>
+  · <a href="README.pt-br.md">🇧🇷 Português (BR)</a>
+  · <a href="README.pt-pt.md">🇵🇹 Português (PT)</a>
+  · <a href="README.es-es.md">🇪🇸 Español (ES)</a>
+  · <a href="README.zh-cn.md">🇨🇳 简体中文</a>
+</p>
 
-## O que inclui
+> Dolphin restyled as a **macOS Finder** on **Hyprland + Noctalia**: a glass sidebar, **MacTahoe** icons and folders that **change colour with the wallpaper**, following Noctalia's tonal (Material You) palette.
 
-| Peça | O que faz |
+<p align="center">
+  <img src="screenshots/dolphin.png" width="100%" alt="Dolphin with a glass sidebar, MacTahoe icons and rose tonal folders">
+</p>
+
+---
+
+## 01 / AT A GLANCE
+
+<p align="center">
+  <img src="assets/readme/at-a-glance.svg" width="100%" alt="Darkly · MacTahoe-dark · Noctalia M3 · Hyprland">
+</p>
+
+## 02 / CAPABILITIES
+
+<p align="center">
+  <img src="assets/readme/capabilities.svg" width="100%" alt="CAPABILITIES">
+</p>
+
+| Piece | What it does |
 |---|---|
-| **Darkly** (estilo Qt6) | Cantos arredondados; barra lateral e toolbar translúcidas, área das pastas com vidro subtil; sem linha de foco nem separadores |
-| **MacTahoe-dark** (ícones) | Ícones estilo macOS Tahoe |
-| **Template do Noctalia** + `mactahoe-recolor.py` | Sempre que o esquema muda, pinta as pastas com o tom principal do Noctalia |
-| **dolphinrc / dolphinui.rc** | Sem menu, toolbar mínima (◀ ▶ · vista · caminho · pesquisa · terminal · menu), slider de zoom, ícones a 64 px |
-| **Ícones de pastas** (`config/folder-icons.tsv`) | Ícones personalizados por pasta (ex.: `Vault → folder-sign`) |
-| **Regras do Hyprland** (`hypr/dolphin.lua`) | Janela opaca (o vidro vem do Darkly) e diálogos a flutuar |
+| **Darkly** (Qt6 style) | Rounded corners; translucent sidebar and toolbar, subtle glass on the file area; no focus line, no separators |
+| **MacTahoe-dark** (icons) | macOS Tahoe–style icons |
+| **Noctalia template** + `mactahoe-recolor.py` | Whenever the scheme changes, paints the folders with Noctalia's primary tone |
+| **dolphinrc / dolphinui.rc** | No menu bar, minimal toolbar (◀ ▶ · view · path · search · terminal · menu), zoom slider, 64 px icons |
+| **Folder icons** (`config/folder-icons.tsv`) | Custom icons per folder (e.g. `Vault → folder-sign`) |
+| **Hyprland rules** (`hypr/dolphin.lua`) | Opaque window (the glass comes from Darkly) and floating dialogs |
 
-## Requisitos
+### What is actually happening?
 
-- Arch / CachyOS (usa `paru` ou `yay`)
-- Hyprland (config em Lua) com blur ligado
-- Noctalia Shell com os templates `qt` e `kcolorscheme` ativos
-- `qt6ct` como platform theme (`QT_QPA_PLATFORMTHEME=qt6ct`)
+- The translucency is drawn by **Darkly**, per widget. Hyprland keeps the window at `opacity 1.0` and blurs only what Darkly leaves see-through.
+- Noctalia renders `palette.json` from its M3 scheme on every wallpaper/scheme change, then runs the `post_hook`.
+- The hook rewrites the 18 folder SVGs in `places/scalable` from pristine blue originals (`#006efd`), then clears the KDE icon cache.
+
+## 03 / TONAL PIPELINE
+
+<p align="center">
+  <img src="assets/readme/tonal-pipeline.svg" width="100%" alt="wallpaper → M3 → palette.json → mactahoe-recolor.py → icons">
+</p>
+
+The hue comes from `primary.light`, the saturation from the more vivid of the two primaries (capped at `MAX_SAT`), and the lightness is fixed (`LIGHTNESS`). The folder keeps the wallpaper's hue without turning neon or washed out.
+
+## 04 / INSTALL
+
+### Requirements
+
+- Arch / CachyOS (uses `paru` or `yay`)
+- Hyprland (Lua config) with blur enabled
+- Noctalia Shell with the `qt` and `kcolorscheme` templates active
+- `qt6ct` as the platform theme (`QT_QPA_PLATFORMTHEME=qt6ct`)
 - `fish`, `git`, `python3`, `kwriteconfig6`
 
-## Instalação
+### Fast path
 
 ```fish
-git clone https://github.com/<o-teu-utilizador>/dolphin-finder-noctalia.git
+git clone https://github.com/mastermaiolo/dolphin-finder-noctalia.git
 cd dolphin-finder-noctalia
 ./install.fish
 ```
 
-O script:
+<details>
+<summary><strong>What the installer does</strong></summary>
 
-1. instala `darkly`, `inter-font`, `git` e `python` (salta com `--no-deps`);
-2. clona o [MacTahoe-icon-theme](https://github.com/vinceliuice/MacTahoe-icon-theme) e instala-o em `~/.local/share/icons`;
-3. copia o template e o script de recoloração para `~/.config/noctalia/` e regista o template no `config.toml`;
-4. aplica `darklyrc`, `qt6ct` (Darkly + MacTahoe-dark), `dolphinrc`, a toolbar e os ícones das pastas.
+1. installs `darkly`, `inter-font`, `git` and `python` (skip with `--no-deps`);
+2. clones [MacTahoe-icon-theme](https://github.com/vinceliuice/MacTahoe-icon-theme) and installs it into `~/.local/share/icons`;
+3. copies the template and the recolour script into `~/.config/noctalia/` and registers the template in `config.toml`;
+4. applies `darklyrc`, `qt6ct` (Darkly + MacTahoe-dark), `dolphinrc`, the toolbar and the folder icons.
 
-Antes de mexer num ficheiro faz sempre uma cópia (`*.bak-AAAAMMDD-HHMMSS`).
+Every file it touches is backed up first (`*.bak-YYYYMMDD-HHMMSS`).
 
-**Passos manuais:**
+</details>
 
-- copiar as regras de [`hypr/dolphin.lua`](hypr/dolphin.lua) para a tua config do Hyprland;
-- usar `scale >= 1` no monitor (ver *Problemas conhecidos*);
-- no qt6ct, escolher a fonte **Inter 10**;
-- fechar e voltar a abrir o Dolphin.
+### Manual steps
 
-## Afinar
+- copy the rules from [`hypr/dolphin.lua`](hypr/dolphin.lua) into your Hyprland config;
+- use `scale >= 1` on the monitor (see *08 / Failure modes*);
+- in qt6ct, pick the **Inter 10** font;
+- close and reopen Dolphin.
 
-**Cor das pastas:** no topo de `~/.config/noctalia/scripts/mactahoe-recolor.py`.
+## 05 / CONTROL SURFACE
 
-```python
-LIGHTNESS = 0.58   # mais baixo = pasta mais escura (Finder ≈ 0.50)
-MAX_SAT   = 0.60   # 0.3 = tonal discreto · 0.8 = vivo
-```
+<p align="center">
+  <img src="assets/readme/control-surface.svg" width="100%" alt="LIGHTNESS · MAX_SAT · darklyrc">
+</p>
 
-Para aplicar na hora:
+Apply the recolour immediately:
 
 ```fish
-python3 ~/.config/noctalia/scripts/mactahoe-recolor.py            # cor do Noctalia
-python3 ~/.config/noctalia/scripts/mactahoe-recolor.py '#1a8fe8'  # cor fixa
+python3 ~/.config/noctalia/scripts/mactahoe-recolor.py            # Noctalia colour
+python3 ~/.config/noctalia/scripts/mactahoe-recolor.py '#1a8fe8'  # fixed colour
 ```
 
-**Vidro:** em `~/.config/darklyrc`.
+## 06 / CONFIGURATION
 
-| Chave | Valor | Efeito |
+**Folder colour:** at the top of `~/.config/noctalia/scripts/mactahoe-recolor.py`.
+
+```python
+LIGHTNESS = 0.58   # lower = darker folder (Finder ≈ 0.50)
+MAX_SAT   = 0.60   # 0.3 = discreet tonal · 0.8 = vivid
+```
+
+**Glass:** in `~/.config/darklyrc`.
+
+| Key | Value | Effect |
 |---|---|---|
-| `DolphinSidebarOpacity` | 55 | barra lateral (40 = mais vidro, 70 = mais sólido) |
-| `ToolBarOpacity` | 55 | barra de ferramentas |
-| `DolphinViewOpacity` | 80 | área das pastas (subir para 85–90 com wallpapers claros) |
+| `DolphinSidebarOpacity` | 55 | sidebar (40 = glassier, 70 = more solid) |
+| `ToolBarOpacity` | 55 | toolbar |
+| `DolphinViewOpacity` | 80 | file area (raise to 85–90 with light wallpapers) |
 
-## Problemas conhecidos
+<details>
+<summary><strong>Noctalia template block</strong></summary>
 
-- **Blur cortado no fundo ou à direita da janela:** acontece com `scale` do monitor abaixo de 1 (ex.: `0.9375`). O Hyprland recorta o blur em `largura×scale` / `altura×scale`. Solução: `scale = "1"`.
-- **Barras de capacidade nos dispositivos** da barra lateral: o Dolphin não tem opção para as esconder.
-- **"16 folders" em inglês** na barra de estado: são frases que ainda não estão traduzidas no próprio Dolphin.
-- **Instalar o MacTahoe outra vez** pode mostrar avisos `cannot remove`: não têm importância.
+Added to `~/.config/noctalia/config.toml` by `install.fish` (or by hand from `noctalia/config.snippet.toml`):
 
-## Desinstalar
+```toml
+[theme.templates.user.mactahoe]
+input_path = "$HOME/.config/noctalia/templates/mactahoe/palette.json"
+output_path = "$HOME/.local/state/mactahoe-noctalia/palette.json"
+post_hook = "python3 $HOME/.config/noctalia/scripts/mactahoe-recolor.py"
+```
+
+</details>
+
+## 07 / ARCHITECTURE
+
+<p align="center">
+  <img src="assets/readme/architecture.svg" width="100%" alt="ARCHITECTURE">
+</p>
+
+```text
+dolphin-finder-noctalia/
+├── install.fish
+├── config/
+│   ├── darklyrc
+│   └── folder-icons.tsv
+├── hypr/
+│   └── dolphin.lua
+├── kxmlgui/
+│   └── dolphinui.rc
+├── noctalia/
+│   ├── config.snippet.toml
+│   ├── scripts/mactahoe-recolor.py
+│   └── templates/mactahoe/palette.json
+├── assets/readme/          # README artwork
+└── screenshots/
+```
+
+## 08 / FAILURE MODES
+
+<p align="center">
+  <img src="assets/readme/failure-modes.svg" width="100%" alt="FAILURE MODES">
+</p>
+
+<details>
+<summary><strong>Long-form notes</strong></summary>
+
+- **Blur cut off at the bottom or right of the window:** happens with a monitor `scale` below 1 (e.g. `0.9375`). Hyprland clips the blur at `width×scale` / `height×scale`. Fix: `scale = "1"`.
+- **Capacity bars on the devices** in the sidebar: Dolphin has no option to hide them.
+- **"16 folders" in English** in the status bar: these strings are not yet translated in Dolphin itself.
+- **Folders keep their old colour:** the `post_hook` did not run or `python3` is missing — run `mactahoe-recolor.py` by hand.
+- **Reinstalling MacTahoe** may print `cannot remove` warnings: they are harmless.
+
+</details>
+
+<details>
+<summary><strong>Appendix — uninstall</strong></summary>
 
 ```fish
 rm -rf ~/.local/share/icons/MacTahoe{,-dark,-light} ~/.local/share/mactahoe-noctalia
@@ -86,14 +186,28 @@ rm ~/.config/noctalia/scripts/mactahoe-recolor.py
 rm -r ~/.config/noctalia/templates/mactahoe
 ```
 
-Depois:
+Then:
 
-- remove o bloco `[theme.templates.user.mactahoe]` do `config.toml` do Noctalia;
-- repõe os `*.bak-*` que quiseres.
+- remove the `[theme.templates.user.mactahoe]` block from Noctalia's `config.toml`;
+- restore whichever `*.bak-*` files you want.
 
-## Créditos e licenças
+</details>
 
-- Scripts e configs deste repositório: [MIT](LICENSE).
-- [MacTahoe-icon-theme](https://github.com/vinceliuice/MacTahoe-icon-theme), de vinceliuice: GPL-3.0. É descarregado durante a instalação e não vem incluído aqui.
-- [Darkly](https://github.com/Bali10050/Darkly): estilo Qt.
-- [Noctalia](https://noctalia.dev): shell e motor de templates.
+## 09 / PROVENANCE
+
+<p align="center">
+  <img src="assets/readme/provenance.svg" width="100%" alt="MacTahoe · Darkly · Noctalia · MIT">
+</p>
+
+- [MacTahoe-icon-theme](https://github.com/vinceliuice/MacTahoe-icon-theme) by vinceliuice — downloaded at install time, not bundled here.
+- [Darkly](https://github.com/Bali10050/Darkly) — Qt style.
+- [Noctalia](https://noctalia.dev) — shell and template engine.
+
+## 10 / LICENCE
+
+- Scripts and configs in this repository: [MIT](LICENSE).
+- MacTahoe-icon-theme: GPL-3.0 (upstream licence).
+
+---
+
+<p align="center"><sub>MAIOLO / SYSTEMS LAB · DFN</sub></p>
