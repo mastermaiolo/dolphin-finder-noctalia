@@ -672,4 +672,5 @@ L = {
   ]
  }
 }
-json.dump(L, open("lang.json", "w"), ensure_ascii=False)
+import os
+json.dump(L, open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "lang.json"), "w"), ensure_ascii=False)

@@ -1,5 +1,8 @@
 import json
-SW=json.load(open('switch.json'))
+import os as _os
+HERE = _os.path.dirname(_os.path.abspath(__file__))
+ROOT = _os.path.abspath(_os.path.join(HERE, "..", ".."))
+SW=json.load(open(_os.path.join(HERE,'switch.json')))
 CODE_INSTALL='''```fish
 git clone https://github.com/<USER>/dolphin-finder-noctalia.git
 cd dolphin-finder-noctalia
@@ -199,7 +202,7 @@ def build(k,T):
 
 <p align="center"><sub>MAIOLO / SYSTEMS LAB · DFN</sub></p>
 '''
-L=json.load(open('lang.json'))
+L=json.load(open(_os.path.join(HERE,'lang.json')))
 names={"en":"README.md","pt-br":"README.pt-br.md","pt-pt":"README.pt-pt.md","es-es":"README.es-es.md","zh-cn":"README.zh-cn.md"}
-for k,T in L.items(): open(names[k],"w").write(build(k,T))
+for k,T in L.items(): open(_os.path.join(ROOT,names[k]),"w").write(build(k,T))
 print("built",list(L))

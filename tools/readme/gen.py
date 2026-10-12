@@ -1,4 +1,7 @@
 import colorsys
+import os as _os
+HERE = _os.path.dirname(_os.path.abspath(__file__))
+ROOT = _os.path.abspath(_os.path.join(HERE, "..", ".."))
 BG="#0B0D0F";PN="#111419";ST="#2A2D31";BONE="#E9E5DC";GR="#8E8A82";VER="#B62B32";RULE="#4D5156"
 MONO="JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
 SANS="Inter, Segoe UI, Arial, sans-serif"
@@ -27,7 +30,7 @@ def folder(x,y,w,c,op=1):
       f'<rect x="{x}" y="{y+h*0.16}" width="{w}" height="{h*0.84}" rx="{w*0.06}" fill="{c}"/>'
       f'<rect x="{x+w*0.03}" y="{y+h*0.2}" width="{w*0.94}" height="{h*0.035}" rx="2" fill="#FFFFFF" opacity=".7"/></g>')
 import json as _j
-_SHI=_j.load(open("shi.json"))["d"]
+_SHI=_j.load(open(_os.path.join(HERE,"shi.json")))["d"]
 def seal(cx,y,size,fill=VER):
     k=size/1000; tx=cx-502*k
     return f'<path d="{_SHI}" fill="{fill}" transform="translate({tx:.2f} {y}) scale({k} {-k})"/>'
@@ -151,5 +154,5 @@ for i,(k,v,sub) in enumerate([("ICONS","MacTahoe","vinceliuice · GPL-3.0"),("QT
     s+=card(28+i*287,58,275,96,k,v,sub,BONE if i<3 else VER)
 s+=t(28,180,"MacTahoe is downloaded at install time — not redistributed here.",11,GR,w=400)
 out["provenance"]=s+"</svg>"
-for k,v in out.items(): open(f"assets/readme/{k}.svg","w").write(v)
+for k,v in out.items(): open(_os.path.join(ROOT,"assets/readme",f"{k}.svg"),"w").write(v)
 print(list(out))
